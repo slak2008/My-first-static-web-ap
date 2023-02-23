@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Vanilla JavaScript App</title>
+  <script
+    src="https://code.jquery.com/jquery-3.6.3.js"
+    integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+    crossorigin="anonymous">
+  </script>
+</head> 
+  
+<body>
+  <main>
+    <h1>Weather around the world</h1>    
+    
+    <label for="by">choose a city</label> 
+    <select name="by" id="by">
+
+      <optgroup label="Citys in the US">
+        <option value="Dallas">Dallas</option>
+        <option value="San Francisco">San francisco</option>
+
+        <option value="Washington">Washington DC</option>
+        <option value="miami">Miami</option>
+      </optgroup>
+
+      <optgroup label="Citys in Denmark">
+        <option value="Copenhagen">Copenhagen</option>
+      </optgroup>
+
+    </select>
+    <div>
+      <p>
+        degrees in celsius: <span id="temp_c"></span>
+      </p>
+      <p>
+        degrees in fahrenheit: <span id="temp_f"></span>
+      </p>
+      <p>
+        local time: <span id="localtime"></span>
+      </p>
+      <p>
+        it's currently blowing with a pace of <span id="wind"></span> m/s
+      </p>
+      <p>
+       it feels like <span id="feelsLike"></span> degrees celsius
+      </p>
+      <p>
+        it's currently <span id="weather"></span>
+      </p>
+      <img id="imgIcon" src="" alt="A picture symbolising the current weather" height="100" width="125">
+    
+    </div>
+  </main>
+  <script>
+
+    $('#by').change(function(){
+      console.log('by '+ $('#by').val())
+      fetchCity( $('#by').val())
+    });
+    
+    const formatter = new Intl.NumberFormat('da', {
+     minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+    function fetchCity(city)  {
+      fetch('https://api.weatherapi.com/v1/current.json?key=3de6c9f8c2504acaa36202353230902&q=' + city + '&aqi=no').then(function (response) {
+        // The API call was successful!
+        return response.json();
+      }).then(function (data) {
+        // This is the JSON from our response
+        console.log(data);
+        var temperature = data.current.temp_c;
+        var americantemperature = data.current.temp_f;
+        var time = data.location.localtime;
+        var feelslike = data.current.feelslike_c;
+        var humidity = data.current.humidity;
+        var wind = data.current.wind_kph /3.6;
+        var weather = data.current.condition.text;
+        var weathericon = data.current.condition.icon;
+        $('#temp_c').text(formatter.format(temperature));
+        $('#temp_f').text(formatter.format(americantemperature));
+        $('#localtime').text(time);
+        $('#feelsLike').text(formatter.format(feelslike));
+        $('#wind').text(formatter.format(wind));
+        $('#weather').text(weather);
+        $('#imgIcon').attr("src", weathericon);
+
+        //$('#temperature-feels-like-text').text(feelsLike);
+        //$('#city-text').text(city);
+        if (temperature > 10) {
+
+        }
+      }).catch(function (err) {
+        // There was an error
+        console.warn('Something went wrong.', err);
+      });
+    } 
+   
+  </script>
+</body>
+
+</html>
